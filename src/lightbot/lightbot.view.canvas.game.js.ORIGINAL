@@ -1,18 +1,3 @@
-//Azure POST function added by GM
-function onLevelComplete(data) {
-  console.log("Level complete:", data);
-
-  // Send to Azure Function endpoint
-  fetch("/api/log", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  }).catch(err => console.error("Logging failed:", err));
-}
-
-
 // Canvas renderer + main simulation tick (60fps); drives `app.step()` and `app.draw()`.
 export function canvasView(app, canvas) {
   var lightBot = app;
@@ -39,11 +24,6 @@ export function canvasView(app, canvas) {
     bg = lightBot.ctx.createPattern(tmp, 'repeat');
   };
 
-
-//start time setting by GM
-lightBot.startTime = Date.now();
-
-
   function update() {
     // check if we can execute the next bot instruction here?
     if (lightBot.bot.isInExecutionMode() && lightBot.bot.isReadyForNextInstruction() && lightBot.bot.hasNextInstruction()) {
@@ -68,22 +48,6 @@ lightBot.startTime = Date.now();
 
       // set the map as complete
       lightBot.map.complete();
-
-
-  //ADDED THIS BLOCK RIGHT HERE
-  onLevelComplete({
-    levelId: lightBot.map.name || lightBot.map.id || "unknown",
-
-    // number of instructions used
-    steps: lightBot.bot.program ? lightBot.bot.program.length : 0,
-
-    // time spent (ms)
-    time: Date.now() - (lightBot.startTime || Date.now()),
-
-    // timestamp
-    timestamp: new Date().toISOString()
-  });
-
 
       // return to map selection screen
     }
